@@ -1,0 +1,54 @@
+# https://taskfile.dev
+version: "3"
+
+tasks:
+  build:
+    desc: "Build the provider binary"
+    cmds:
+      - go build -o terraform-provider-vercel
+    sources:
+      - "**/*.go"
+      - go.mod
+      - go.sum
+    generates:
+      - terraform-provider-vercel
+
+  install:
+    desc: "Set up an override allowing a local version of the provider to be used"
+    cmds:
+      - cmd: |-
+          cat << EOF > ~/.terraformrc
+          provider_installation {
+            dev_overrides {
+              "vercel/vercel" = "$(pwd)"
+            }
+            direct {}
+          }
+          EOF
+
+  uninstall:
+    desc: "Remove any local overrides for local development"
+    cmds:
+      - rm ~/.terraformrc
+
+  install-tfplugindocs:
+    desc: "Install the tfplugindocs tool"
+    cmds:
+      - go install github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs@v0.7.0
+    status:
+      - which staticcheck
+
+  docs:
+    desc: "Update the docs generated from description fields"
+    deps:
+      - install-tfplugindocs
+    cmds:
+      - tfplugindocs
+      - sed -i.bak 's/vercel Provider/Vercel Provider/g' docs/index.md
+      - rm docs/index.md.bak
+    sources:
+      - "vercel/**/*.go"
+      - "main.go"
+      - "examples/**/*.tf"
+    generates:
+      - docs/**/*.md
