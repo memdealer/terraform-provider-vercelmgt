@@ -42,9 +42,14 @@ func (c *Client) GetTeamMember(ctx context.Context, memberEmail string) (r TeamM
 		"ResponseMarker": flatResp.Members,
 	})
 
-	return TeamMemberResponse{
-		UID:   flatResp.Members[0].UID,
-		Email: flatResp.Members[0].Email,
-		Role:  flatResp.Members[0].Role,
-	}, err
+	// During import, if none found -> none should be returned
+	// The check prevents panic.
+	if len(flatResp.Members) > 1 {
+		return TeamMemberResponse{
+			UID:   flatResp.Members[0].UID,
+			Email: flatResp.Members[0].Email,
+			Role:  flatResp.Members[0].Role,
+		}, err
+	}
+	return TeamMemberResponse{}, err
 }
