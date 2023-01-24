@@ -50,7 +50,7 @@ Retrieves information about member user in given team`,
 			"uid": {
 				Type:          types.StringType,
 				Computed:      true,
-				PlanModifiers: tfsdk.AttributePlanModifiers{resource.UseStateForUnknown()},
+				PlanModifiers: tfsdk.AttributePlanModifiers{resource.RequiresReplace()},
 			},
 			"email": {
 				Required: true,
