@@ -5,7 +5,7 @@ tasks:
   build:
     desc: "Build the provider binary"
     cmds:
-      - go build -o terraform-provider-vercel
+      - go build -o terraform-provider-vercelmgt
     sources:
       - "**/*.go"
       - go.mod
@@ -20,7 +20,7 @@ tasks:
           cat << EOF > ~/.terraformrc
           provider_installation {
             dev_overrides {
-              "vercel/vercel" = "$(pwd)"
+              "memdealer/vercelmgt" = "$(pwd)"
             }
             direct {}
           }
